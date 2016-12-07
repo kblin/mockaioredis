@@ -24,5 +24,5 @@ Like mockredispy, mockaioredis is licensed under the Apache License, Version 2.0
 See [`LICENSE`](LICENSE) for details.
 
 [aioredis]: https://github.com/aio-libs/aioredis
-[mockresispy]: https://github.com/locationlabs/mockredis
+[mockredispy]: https://github.com/locationlabs/mockredis
 [redis-py]: https://github.com/andymccurdy/redis-py
