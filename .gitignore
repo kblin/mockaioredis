@@ -4,4 +4,4 @@ htmlcov/*
 .cache/*
 .eggs/*
 *egg-info/*
-*/__pycache__/*
+**/__pycache__/*

@@ -1,6 +1,6 @@
 import asyncio
 
-from .util import _NOTSET
+from mockaioredis.util import _NOTSET
 
 class HashCommandsMixin:
 
