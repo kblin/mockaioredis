@@ -1,10 +1,11 @@
 from mockredis import MockRedis as _MockRedis
 
 from .hash import HashCommandsMixin
+from .list import ListCommandsMixin
 
 __all__ = ['MockRedis']
 
-class MockRedis(HashCommandsMixin):
+class MockRedis(HashCommandsMixin, ListCommandsMixin):
     '''Fake high-level aioredis.Redis interface'''
 
     def __init__(self, connection=None, encoding=None):

@@ -1,12 +1,5 @@
 import pytest
 
-from mockaioredis import MockRedis
-
-
-@pytest.fixture
-def redis():
-    return MockRedis()
-
 
 @pytest.mark.asyncio
 async def test_hset(redis):
