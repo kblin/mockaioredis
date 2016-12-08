@@ -25,6 +25,22 @@ classifiers = [
     'Topic :: Software Development :: Libraries',
 ]
 
+
+def read_version():
+    import re
+    import os.path
+    regexp = re.compile(r"^__version__\W*=\W*'([\d.abrc]+)'")
+    init_py = os.path.join(os.path.dirname(__file__),
+                           'mockaioredis', '__init__.py')
+    with open(init_py, 'r') as fh:
+        for line in fh:
+            match = regexp.match(line)
+            if match is not None:
+                return match.group(1)
+        else:
+            raise RuntimeError('Unable to find version in ' + init_py)
+
+
 class PyTest(TestCommand):
     def finalize_options(self):
         TestCommand.finalize_options(self)
@@ -39,7 +55,7 @@ class PyTest(TestCommand):
 
 
 setup(name='mockaioredis',
-      version='0.0.3',
+      version=read_version(),
       description=("Mock implementation of aioredis"),
       long_description="Mock implementation of aioredis",
       classifiers=classifiers,
