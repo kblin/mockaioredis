@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
 install_requires = [
-    'mockredispy-kblin>=2.9.3.1'
+    'mockredispy-kblin'
 ]
 
 tests_require = [
@@ -41,6 +41,11 @@ def read_version():
             raise RuntimeError('Unable to find version in ' + init_py)
 
 
+def read(filename):
+    with open(filename, 'r') as fh:
+        return fh.read()
+
+
 class PyTest(TestCommand):
     def finalize_options(self):
         TestCommand.finalize_options(self)
@@ -56,8 +61,8 @@ class PyTest(TestCommand):
 
 setup(name='mockaioredis',
       version=read_version(),
-      description=("Mock implementation of aioredis"),
-      long_description="Mock implementation of aioredis",
+      description="Mock implementation of aioredis",
+      long_description=read('README.rst'),
       classifiers=classifiers,
       platforms=["POSIX"],
       author="Kai Blin",
