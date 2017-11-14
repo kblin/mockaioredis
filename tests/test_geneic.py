@@ -35,3 +35,24 @@ async def test_delete(redis):
     assert 2 == val
     assert False == redis._redis.exists('baz')
     assert False == redis._redis.exists('blargh')
+
+
+@pytest.mark.asyncio
+async def test_keys(redis):
+    redis._redis.set('foo', 'bar')
+    redis._redis.set('baz', 'blub')
+    redis._redis.set('blargh', 'blurgh')
+
+    ret = await redis.keys('b*')
+    assert len(ret) == 2
+    # order is random, so sort to make this reliable
+    ret.sort()
+    assert ret[0] == b'baz'
+    assert ret[1] == b'blargh'
+
+    ret = await redis.keys('gnarf*')
+    assert len(ret) == 0
+
+    ret = await redis.keys('f*', encoding='utf=8')
+    assert len(ret) == 1
+    assert ret[0] == 'foo'
