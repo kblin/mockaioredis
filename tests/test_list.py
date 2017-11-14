@@ -74,3 +74,17 @@ async def test_lrange(redis):
         await redis.lrange('foo', 'bob', -1)
     with pytest.raises(TypeError):
         await redis.lrange('foo', 0, 'bob')
+
+
+@pytest.mark.asyncio
+async def test_rpoplpush(redis):
+    redis._redis.lpush('foo', 'baz', 'blub', 'blargh')
+    ret = await redis.rpoplpush('foo', 'bar')
+    assert ret == b'baz'
+    assert await redis.llen('foo') == 2
+    assert await redis.llen('bar') == 1
+
+    ret = await redis.rpoplpush('foo', 'bar', encoding='utf-8')
+    assert ret == 'blub'
+    assert await redis.llen('foo') == 1
+    assert await redis.llen('bar') == 2

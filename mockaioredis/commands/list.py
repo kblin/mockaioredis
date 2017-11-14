@@ -67,3 +67,18 @@ class ListCommandsMixin:
             return ret
 
         return list(map(lambda x: x.decode(encoding), ret))
+
+    async def rpoplpush(self, sourcekey, destkey, *, encoding=_NOTSET):
+        """Atomically returns and removes the last element (tail) of the
+        list stored at source, and pushes the element at the first element
+        (head) of the list stored at destination.
+        """
+        if encoding == _NOTSET:
+            encoding = self._encoding
+
+        ret = self._redis.rpoplpush(sourcekey, destkey)
+
+        if encoding is None:
+            return ret
+
+        return ret.decode(encoding)
