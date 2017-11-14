@@ -47,3 +47,23 @@ class ListCommandsMixin:
             return ret
 
         return ret.decode(encoding)
+
+    async def lrange(self, key, start, stop, *, encoding=_NOTSET):
+        """Returns the specified elements of the list stored at key.
+
+        :raises TypeError: if start or stop is not int
+        """
+        if encoding == _NOTSET:
+            encoding = self._encoding
+
+        if not isinstance(start, int):
+            raise TypeError("start is not of type int")
+        if not isinstance(stop, int):
+            raise TypeError("stop is not of type int")
+
+        ret = self._redis.lrange(key, start, stop)
+
+        if encoding is None:
+            return ret
+
+        return list(map(lambda x: x.decode(encoding), ret))
