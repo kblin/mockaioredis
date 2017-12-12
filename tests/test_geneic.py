@@ -56,3 +56,10 @@ async def test_keys(redis):
     ret = await redis.keys('f*', encoding='utf=8')
     assert len(ret) == 1
     assert ret[0] == 'foo'
+
+
+@pytest.mark.asyncio
+async def test_ttl(redis):
+    redis._redis.setex('foo', 'bar', 30)
+    ret = await redis.ttl('foo')
+    assert ret <= 30

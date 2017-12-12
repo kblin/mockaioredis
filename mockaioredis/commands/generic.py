@@ -39,3 +39,7 @@ class GenericCommandsMixin:
             return ret
 
         return list(map(lambda x: x.decode(encoding), ret))
+
+    async def ttl(self, key):
+        """Return the TTL of a key in seconds"""
+        return self._redis.ttl(key)
