@@ -28,6 +28,17 @@ class GenericCommandsMixin:
 
         return existing
 
+    async def expire(self, key, timeout):
+        """Set a timeout on a key
+
+        For now, only supports integer timeouts, until pexpire is implemented
+        """
+        # TODO: support float timeouts and forward to pexpire, like aio-redis
+        if not isinstance(timeout, int):
+            raise TypeError(
+                    "timeout argument must be int, not {!r}".format(timeout))
+        return self._redis.expire(key, timeout)
+
     async def keys(self, pattern, *, encoding=_NOTSET):
         """Returns all keys matching pattern."""
         if encoding == _NOTSET:

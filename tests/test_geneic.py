@@ -22,6 +22,18 @@ async def test_exists(redis):
 
 
 @pytest.mark.asyncio
+async def test_expire(redis):
+    redis._redis.set('foo', 'bar')
+    await redis.expire('foo', 30)
+    assert redis._redis.ttl('foo') <= 30
+
+    with pytest.raises(TypeError):
+        # the sync version supports timedeltas, so people might get this wrong
+        from datetime import timedelta
+        await redis.expire('foo', timedelta(seconds=30))
+
+
+@pytest.mark.asyncio
 async def test_delete(redis):
     redis._redis.set('foo', 'bar')
     redis._redis.set('baz', 'blub')
