@@ -10,7 +10,6 @@ class GenericCommandsMixin:
         '''Delete specified key(s)'''
         return self._redis.delete(key, *keys)
 
-
     async def exists(self, key, *keys):
         '''Check if key(s) exist
 
@@ -39,6 +38,19 @@ class GenericCommandsMixin:
                     "timeout argument must be int, not {!r}".format(timeout))
         return self._redis.expire(key, timeout)
 
+    async def get(self, key, encoding=_NOTSET):
+        '''Gets the value of a key'''
+        if encoding == _NOTSET:
+            encoding = self._encoding
+        ret = self._redis.get(key)
+
+        if encoding is None:
+            return ret
+
+        if hasattr(ret, 'decode'):
+            ret = ret.decode(encoding)
+        return ret
+
     async def keys(self, pattern, *, encoding=_NOTSET):
         """Returns all keys matching pattern."""
         if encoding == _NOTSET:
@@ -50,6 +62,10 @@ class GenericCommandsMixin:
             return ret
 
         return list(map(lambda x: x.decode(encoding), ret))
+
+    async def set(self, key, value, ex=None, px=None, nx=False, xx=False):
+        '''Sets the value of a key'''
+        return self._redis.set(key, value, ex=ex, px=px, nx=nx, xx=xx)
 
     async def ttl(self, key):
         """Return the TTL of a key in seconds"""

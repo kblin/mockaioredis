@@ -50,6 +50,16 @@ async def test_delete(redis):
 
 
 @pytest.mark.asyncio
+async def test_get(redis):
+    redis._redis.set('foo', 'bar')
+    val = await redis.get('foo')
+    assert val == b'bar'
+
+    val = await redis.get('foo', encoding='utf-8')
+    assert val == 'bar'
+
+
+@pytest.mark.asyncio
 async def test_keys(redis):
     redis._redis.set('foo', 'bar')
     redis._redis.set('baz', 'blub')
@@ -68,6 +78,12 @@ async def test_keys(redis):
     ret = await redis.keys('f*', encoding='utf=8')
     assert len(ret) == 1
     assert ret[0] == 'foo'
+
+
+@pytest.mark.asyncio
+async def test_set(redis):
+    await redis.set('foo', 'bar')
+    assert redis._redis.get('foo') == b'bar'
 
 
 @pytest.mark.asyncio
