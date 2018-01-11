@@ -60,6 +60,19 @@ async def test_get(redis):
 
 
 @pytest.mark.asyncio
+async def test_incr(redis):
+    redis._redis.set('foo', '1')
+    val = await redis.incr('foo')
+    assert val == 2
+
+    val = await redis.incr('bar')
+    assert val == 1
+
+    val = await redis.incr('bar', 20)
+    assert val == 21
+
+
+@pytest.mark.asyncio
 async def test_keys(redis):
     redis._redis.set('foo', 'bar')
     redis._redis.set('baz', 'blub')
