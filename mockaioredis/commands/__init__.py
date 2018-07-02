@@ -6,8 +6,9 @@ from .list import ListCommandsMixin
 
 __all__ = ['MockRedis']
 
+
 class MockRedis(GenericCommandsMixin, HashCommandsMixin, ListCommandsMixin):
-    '''Fake high-level aioredis.Redis interface'''
+    """Fake high-level aioredis.Redis interface"""
 
     def __init__(self, connection=None, encoding=None):
         # Just for API compatibility

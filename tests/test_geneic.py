@@ -1,5 +1,6 @@
 import pytest
 
+
 @pytest.mark.asyncio
 async def test_exists(redis):
     redis._redis.set('foo', 'bar')
@@ -104,3 +105,12 @@ async def test_ttl(redis):
     redis._redis.setex('foo', 'bar', 30)
     ret = await redis.ttl('foo')
     assert ret <= 30
+
+
+@pytest.mark.asyncio
+async def test_pipeline(redis):
+    pipe = redis.pipeline()
+    pipe.set('foo', 'bar')
+    pipe.get('foo')
+    ret = await pipe.execute()
+    assert [True, b'bar'] == ret

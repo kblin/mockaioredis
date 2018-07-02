@@ -1,23 +1,46 @@
-'Generic Redis commands'
+"""Generic Redis commands"""
+from mockredis.pipeline import MockRedisPipeline
+from mockredis.exceptions import WatchError
+
 from mockaioredis.util import _NOTSET
 
 
+class AsyncMockRedisPipeline(MockRedisPipeline):
+
+    async def execute(self):
+        """
+        Execute all of the saved commands and return results.
+        """
+        try:
+            for key, value in self._watched_keys.items():
+                if self.mock_redis.redis.get(self.mock_redis._encode(key)) != value:
+                    raise WatchError("Watched variable changed.")
+            return [await command() for command in self.commands]
+        finally:
+            self._reset()
+
+
 class GenericCommandsMixin:
-    '''Generic commands mixin
-    '''
+    """Generic commands mixin
+    """
+    SET_IF_EXIST = "SET_IF_EXIST"
+    SET_IF_NOT_EXIST = "SET_IF_NOT_EXIST"
+
+    def pipeline(self, transaction=True, shard_hint=None):
+        return AsyncMockRedisPipeline(self, transaction, shard_hint)
 
     async def delete(self, key, *keys):
-        '''Delete specified key(s)'''
+        """Delete specified key(s)"""
         return self._redis.delete(key, *keys)
 
     async def exists(self, key, *keys):
-        '''Check if key(s) exist
+        """Check if key(s) exist
 
         Like in Redis 3.0.3+, returns int count of existing keys.
         If the same existing key is given multiple times, it is
         counted multiple times.
-        '''
-        all_keys = (key, ) + keys
+        """
+        all_keys = (key,) + keys
         existing = 0
         # redis-py and, by extension mockredispy still only support
         # single-key checks that return True/False
@@ -35,11 +58,11 @@ class GenericCommandsMixin:
         # TODO: support float timeouts and forward to pexpire, like aio-redis
         if not isinstance(timeout, int):
             raise TypeError(
-                    "timeout argument must be int, not {!r}".format(timeout))
+                "timeout argument must be int, not {!r}".format(timeout))
         return self._redis.expire(key, timeout)
 
     async def get(self, key, encoding=_NOTSET):
-        '''Gets the value of a key'''
+        """Gets the value of a key"""
         if encoding == _NOTSET:
             encoding = self._encoding
         ret = self._redis.get(key)
@@ -52,7 +75,7 @@ class GenericCommandsMixin:
         return ret
 
     async def incr(self, key, amount=1):
-        '''Increments key by the amount specified'''
+        """Increments key by the amount specified"""
         return self._redis.incr(key, amount)
 
     incrby = incr
