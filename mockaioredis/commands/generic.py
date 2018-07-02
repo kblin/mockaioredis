@@ -92,9 +92,14 @@ class GenericCommandsMixin:
 
         return list(map(lambda x: x.decode(encoding), ret))
 
-    async def set(self, key, value, ex=None, px=None, nx=False, xx=False):
-        '''Sets the value of a key'''
-        return self._redis.set(key, value, ex=ex, px=px, nx=nx, xx=xx)
+    async def set(self, key, value, *, expire=None, pexpire=None, exist=None):
+        """Sets the value of a key"""
+        nx = xx = False
+        if exist is self.SET_IF_EXIST:
+            xx = True
+        elif exist is self.SET_IF_NOT_EXIST:
+            nx = True
+        return self._redis.set(key, value, ex=expire, px=pexpire, nx=nx, xx=xx)
 
     async def ttl(self, key):
         """Return the TTL of a key in seconds"""

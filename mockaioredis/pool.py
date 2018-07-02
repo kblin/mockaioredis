@@ -2,8 +2,8 @@
 import asyncio
 import collections
 
-from .util import _NOTSET
 from .commands import MockRedis, create_redis
+from .util import _NOTSET
 
 
 async def create_pool(address, *, db=0, password=None, ssl=None, encoding=None,
@@ -25,11 +25,31 @@ async def create_pool(address, *, db=0, password=None, ssl=None, encoding=None,
     return pool
 
 
+async def create_redis_pool(address, *, db=None, password=None, ssl=None,
+                            encoding=None, commands_factory=MockRedis,
+                            minsize=1, maxsize=10, parser=None,
+                            timeout=None, pool_cls=None,
+                            connection_cls=None, loop=None):
+    """Creates high-level Redis interface.
+
+    This function is a coroutine.
+    """
+    pool = await create_pool(address, db=db,
+                             password=password,
+                             ssl=ssl,
+                             encoding=encoding,
+                             minsize=minsize,
+                             maxsize=maxsize,
+                             loop=loop)
+    return commands_factory(pool)
+
+
 class MockRedisPool:
     '''Imitate a aioredis.RedisPool
 
     Or at least enough of it to create, use and close a pool
     '''
+
     def __init__(self, address, db=0, password=0, encoding=None,
                  *, minsize, maxsize, commands_factory, ssl=None, loop=None):
         if loop is None:
@@ -54,28 +74,23 @@ class MockRedisPool:
         self._close_state = asyncio.Event(loop=loop)
         self._close_waiter = asyncio.ensure_future(self._do_close(), loop=loop)
 
-
     @property
     def minsize(self):
         '''always return 1'''
         return 1
-
 
     @property
     def maxsize(self):
         '''always return 1'''
         return 1
 
-
     @property
     def size(self):
         return self.freesize + len(self._used) + self._acquiring
 
-
     @property
     def freesize(self):
         return len(self._pool)
-
 
     async def _do_close(self):
         await self._close_state.wait()
@@ -85,21 +100,17 @@ class MockRedisPool:
                 conn = self._pool.popleft()
             # fake connections, so no need to do anything for used connections
 
-
     def close(self):
         if not self._close_state.is_set():
             self._close_state.set()
-
 
     @property
     def closed(self):
         return self._close_state.is_set()
 
-
     async def wait_closed(self):
         'wait until pool is closed'
         await asyncio.shield(self._close_waiter, loop=self._loop)
-
 
     async def acquire(self):
         '''Pretend to aquire a connection.
@@ -115,14 +126,12 @@ class MockRedisPool:
                 else:
                     await self._cond.wait()
 
-
     def release(self, conn):
         '''Release our single MockRedis connection'''
         assert conn in self._used, "Invalid connection, maybe from other pool?"
         self._used.remove(conn)
         self._pool.append(conn)
         asyncio.ensure_future(self._wakeup(), loop=self._loop)
-
 
     async def _fill_free(self, *, override_min):
         while self.size < self.minsize:
@@ -143,7 +152,6 @@ class MockRedisPool:
                 finally:
                     self._acquiring -= 1
 
-
     def _create_new_connection(self):
         return create_redis(self._address,
                             db=self._db,
@@ -153,11 +161,9 @@ class MockRedisPool:
                             commands_factory=self._factory,
                             loop=self._loop)
 
-
     async def _wakeup(self):
         async with self._cond:
             self._cond.notify()
-
 
     def get(self):
         '''Return async context manager for working with the connection
@@ -169,7 +175,6 @@ class MockRedisPool:
 
 
 class _AsyncConnectionContextManager:
-
     __slots__ = ('_pool', '_conn')
 
     def __init__(self, pool):
@@ -186,5 +191,3 @@ class _AsyncConnectionContextManager:
         finally:
             self._pool = None
             self._conn = None
-
-
