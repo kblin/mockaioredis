@@ -1,6 +1,8 @@
 Mock library to replace aioredis during unit tests
 ==================================================
 
+[![Build Status](https://travis-ci.com/kblin/mockaioredis.svg?branch=master)](https://travis-ci.com/kblin/mockaioredis)
+
 mockaioredis is to [aioredis] what the [mockredispy] library is to plain [redis-py].
 It uses the mockredispy library and wraps it in the asyncio magic required to work like
 aioredis.
