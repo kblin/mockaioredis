@@ -77,5 +77,6 @@ setup(name='mockaioredis',
       include_package_data=True,
       extras_require={
         'testing': tests_require,
+        'shipping': ['twine'],
       },
 )
