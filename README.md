@@ -16,8 +16,11 @@ will be fleshed out more.
 Installation
 ------------
 
-For now, I suggest cloning the git repository and `pip install`ing from there.
-Eventually, as mockaioredis becomes more feature complete, I'll push it to PyPI as well.
+You can install `mockaioredis` from PYPI by running `pip install mockaioredis`.
+
+If you want to update an existing install, run `pip install --update mockaioredis`.
+
+You can also clone this repository from github and run `pip install .` from the repository base directory.
 
 
 License
