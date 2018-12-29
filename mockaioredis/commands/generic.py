@@ -1,4 +1,5 @@
 """Generic Redis commands"""
+import asyncio
 from mockredis.pipeline import MockRedisPipeline
 from mockredis.exceptions import WatchError
 
@@ -15,7 +16,8 @@ class AsyncMockRedisPipeline(MockRedisPipeline):
             for key, value in self._watched_keys.items():
                 if self.mock_redis.redis.get(self.mock_redis._encode(key)) != value:
                     raise WatchError("Watched variable changed.")
-            return [await command() for command in self.commands]
+            result_coroutines = [command() for command in self.commands]
+            return await asyncio.gather(*result_coroutines)
         finally:
             self._reset()
 
