@@ -5,8 +5,20 @@ from mockaioredis.util import _NOTSET
 class ListCommandsMixin:
     '''List commands mixin
 
-    Rum (some) of the Redis list commands
+    Run (some) of the Redis list commands
     '''
+
+    async def lindex(self, key, idx, *, encoding=_NOTSET):
+        """Get an element from the list by index."""
+        if encoding == _NOTSET:
+            encoding = self._encoding
+
+        ret = self._redis.lindex(key, idx)
+
+        if encoding is None:
+            return ret
+
+        return ret.decode(encoding)
 
     async def llen(self, key):
         '''Returns the length of the list stored at key'''

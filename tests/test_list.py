@@ -2,6 +2,19 @@ import pytest
 
 
 @pytest.mark.asyncio
+async def test_lindex(redis):
+    ret = await redis.lindex('foo', 0)
+    assert ret is None
+
+    redis._redis.lpush('foo', 'bar', 'baz', 'blub')
+
+    first = await redis.lindex('foo', 0)
+    assert b'blub' == first
+    last = await redis.lindex('foo', -1, encoding='utf-8')
+    assert 'bar' == last
+
+
+@pytest.mark.asyncio
 async def test_llen(redis):
     length = await redis.llen('foo')
     assert 0 == length
