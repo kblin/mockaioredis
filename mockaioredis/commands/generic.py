@@ -17,7 +17,8 @@ class AsyncMockRedisPipeline(MockRedisPipeline):
                 if self.mock_redis.redis.get(self.mock_redis._encode(key)) != value:
                     raise WatchError("Watched variable changed.")
             result_coroutines = [command() for command in self.commands]
-            return await asyncio.gather(*result_coroutines)
+            results = await asyncio.gather(*result_coroutines)
+            return results
         finally:
             self._reset()
 
