@@ -101,6 +101,16 @@ async def test_set(redis):
 
 
 @pytest.mark.asyncio
+async def test_dbsize(redis):
+    dbsize = await redis.dbsize()
+    assert dbsize == 0
+    await redis.set('foo', 'bar')
+    assert await redis.dbsize() == 1
+    await redis.delete('foo', 'bar')
+    assert await redis.dbsize() == 0
+
+
+@pytest.mark.asyncio
 async def test_ttl(redis):
     redis._redis.setex('foo', 'bar', 30)
     ret = await redis.ttl('foo')
