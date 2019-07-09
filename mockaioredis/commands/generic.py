@@ -108,3 +108,6 @@ class GenericCommandsMixin:
     async def ttl(self, key):
         """Return the TTL of a key in seconds"""
         return self._redis.ttl(key)
+
+    async def dbsize(self):
+        return self._redis.dbsize()
