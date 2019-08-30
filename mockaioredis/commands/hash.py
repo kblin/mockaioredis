@@ -22,6 +22,10 @@ class HashCommandsMixin:
         return ret
 
     @asyncio.coroutine
+    def hexists(self, key, filed):
+        return self._redis.hexists(key, filed)
+
+    @asyncio.coroutine
     def hgetall(self, key, encoding=_NOTSET):
         if encoding == _NOTSET:
             encoding = self._encoding

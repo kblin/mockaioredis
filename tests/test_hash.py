@@ -18,6 +18,19 @@ async def test_hget(redis):
 
 
 @pytest.mark.asyncio
+async def test_hexists(redis):
+    val = await redis.hexists("foo", "bar")
+    assert not val
+
+    await redis.hset("foo", "bar", "baz")
+    val = await redis.hexists("foo", "bar")
+    assert val
+
+    val = await redis.hexists("foo", "spam")
+    assert not val
+
+
+@pytest.mark.asyncio
 async def test_hmset_dict(redis):
     await redis.hmset_dict('foo', {'foo': 'bar', 'baz': 'blargh'})
     assert redis._redis.hmget('foo', ['foo', 'baz']) == [b'bar', b'blargh']
