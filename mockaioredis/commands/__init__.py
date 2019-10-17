@@ -11,10 +11,11 @@ __all__ = ['MockRedis']
 class MockRedis(GenericCommandsMixin, HashCommandsMixin, ListCommandsMixin, SetCommandsMixin):
     """Fake high-level aioredis.Redis interface"""
 
-    def __init__(self, connection=None, encoding=None):
+    def __init__(self, connection=None, encoding=None, **kwargs):
+
         # Just for API compatibility
         self._conn = connection
-        self._redis = _MockRedis()
+        self._redis = _MockRedis(**kwargs)
 
         self._encoding = encoding
 
