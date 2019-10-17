@@ -69,7 +69,7 @@ async def test_incr(redis):
     val = await redis.incr('bar')
     assert val == 1
 
-    val = await redis.incr('bar', 20)
+    val = await redis.incrby('bar', 20)
     assert val == 21
 
 
