@@ -78,11 +78,13 @@ class GenericCommandsMixin:
             ret = ret.decode(encoding)
         return ret
 
-    async def incr(self, key, amount=1):
-        """Increments key by the amount specified"""
-        return self._redis.incr(key, amount)
+    async def incr(self, key):
+        """Increments key by 1"""
+        return self._redis.incr(key)
 
-    incrby = incr
+    async def incrby(self, key, amount):
+        """Increments key by the amount specified"""
+        return self._redis.incrby(key, amount)
 
     async def keys(self, pattern, *, encoding=_NOTSET):
         """Returns all keys matching pattern."""
