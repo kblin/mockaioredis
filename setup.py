@@ -2,6 +2,7 @@ from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
 install_requires = [
+    'aioredis',
     'mockredispy-kblin >= 2.9.3.3',
 ]
 
