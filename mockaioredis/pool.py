@@ -1,6 +1,8 @@
 'Fake aioredis.RedisPool and related functions'
 import asyncio
 import collections
+import sys
+import warnings
 
 from .commands import MockRedis, create_redis
 from .util import _NOTSET
@@ -52,7 +54,10 @@ class MockRedisPool:
 
     def __init__(self, address, db=0, password=0, encoding=None,
                  *, minsize, maxsize, commands_factory, ssl=None, loop=None):
-        if loop is None:
+        if loop is not None and sys.version_info >= (3, 8):
+            warnings.warn("The loop argument is deprecated",
+                          DeprecationWarning)
+        if loop is None and sys.version_info < (3, 8):
             loop = asyncio.get_event_loop()
 
         self._address = address
