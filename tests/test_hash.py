@@ -31,9 +31,33 @@ async def test_hexists(redis):
 
 
 @pytest.mark.asyncio
-async def test_hmset_dict(redis):
+async def test_hmset_dict_args_only(redis):
     await redis.hmset_dict('foo', {'foo': 'bar', 'baz': 'blargh'})
     assert redis._redis.hmget('foo', ['foo', 'baz']) == [b'bar', b'blargh']
+
+
+@pytest.mark.asyncio
+async def test_hmset_dict_kwargs_only(redis):
+    await redis.hmset_dict('foo', foo='bar', baz='blargh')
+    assert redis._redis.hmget('foo', ['foo', 'baz']) == [b'bar', b'blargh']
+
+
+@pytest.mark.asyncio
+async def test_hmset_dict_both(redis):
+    await redis.hmset_dict('foo', {'foo': 'bar'},  baz='blargh')
+    assert redis._redis.hmget('foo', ['foo', 'baz']) == [b'bar', b'blargh']
+
+
+@pytest.mark.asyncio
+async def test_hmset_dict_exceptions(redis):
+    with pytest.raises(TypeError):
+        await redis.hmset_dict('foo')
+
+    with pytest.raises(TypeError):
+        await redis.hmset_dict('foo', {'foo': 'bar'}, {'baz': 'blargh'})
+
+    with pytest.raises(TypeError):
+        await redis.hmset_dict('foo', ['foo', 'bar'])
 
 
 @pytest.mark.asyncio

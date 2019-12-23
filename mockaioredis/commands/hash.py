@@ -52,7 +52,15 @@ class HashCommandsMixin:
 
     @asyncio.coroutine
     def hmset_dict(self, key, *args, **kwargs):
-        args_dict = args[0].copy()
+        if not args and not kwargs:
+            raise TypeError("args or kwargs must be specified")
+        if len(args) > 1:
+            raise TypeError("only one arg allowed")
+        args_dict = {}
+        if len(args) == 1:
+            if not isinstance(args[0], dict):
+                raise TypeError("args[0] must be a dict")
+            args_dict = args[0].copy()
         args_dict.update(kwargs)
         return self._redis.hmset(key, args_dict)
 
