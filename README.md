@@ -25,6 +25,21 @@ If you want to update an existing install, run `pip install --update mockaioredi
 You can also clone this repository from github and run `pip install .` from the repository base directory.
 
 
+Usage
+-----
+
+You can use it as a fixture using pytest-mock
+
+```python
+import mockaioredis
+
+@pytest.fixture(autouse=True)
+def redis(mocker):
+    """Mock Redis."""
+    mocker.patch.object(aioredis, 'create_pool', new=mockaioredis.create_pool)
+```
+
+
 License
 -------
 Like mockredispy, mockaioredis is licensed under the Apache License, Version 2.0.
