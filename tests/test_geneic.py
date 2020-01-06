@@ -124,3 +124,22 @@ async def test_pipeline(redis):
     pipe.get('foo')
     ret = await pipe.execute()
     assert [True, b'bar'] == ret
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('match, cursor, count, expected_cursor, expected_keys', [
+    ('b*', 0, None, 0, [b'baz', b'blargh']),
+    ('gnarf*', b'0', None, 0, []),
+    ('f*', 0, None, 0, [b'foo']),
+    ('*', 0, 2, 2, [b'baz', b'blargh']),
+    ('*', 2, 2, 0, [b'foo'])
+])
+async def test_scan(redis, match, cursor, count, expected_cursor, expected_keys):
+    redis._redis.set('foo', 'bar')
+    redis._redis.set('baz', 'blurb')
+    redis._redis.set('blargh', 'blurgh')
+
+    cursor, keys = await redis.scan(match=match, cursor=cursor, count=count)
+    assert cursor == expected_cursor
+    assert len(keys) == len(expected_keys)
+    assert keys == expected_keys
