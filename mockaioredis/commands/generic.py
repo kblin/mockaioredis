@@ -113,3 +113,7 @@ class GenericCommandsMixin:
 
     async def dbsize(self):
         return self._redis.dbsize()
+
+    async def scan(self, cursor=0, match=None, count=None):
+        """Incrementally iterate the keys space."""
+        return self._redis.scan(cursor=cursor, match=match, count=count)
