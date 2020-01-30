@@ -94,3 +94,7 @@ class ListCommandsMixin:
             return ret
 
         return ret.decode(encoding)
+
+    async def lset(self, key, idx, value):
+        """Sets the list element at index to value"""
+        return self._redis.lset(key, idx, value)
