@@ -101,3 +101,13 @@ async def test_rpoplpush(redis):
     assert ret == 'blub'
     assert await redis.llen('foo') == 1
     assert await redis.llen('bar') == 2
+
+
+@pytest.mark.asyncio
+async def test_lpush(redis):
+    ret = await redis.rpush('foo', 'bar', 'blub', 'blargh')
+
+    await redis.lset('foo', 1, 'baz')
+
+    assert 3 == redis._redis.llen('foo')
+    assert [b'bar', b'baz', b'blargh'] == redis._redis.lrange('foo', 0, -1)
