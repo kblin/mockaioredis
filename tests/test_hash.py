@@ -94,3 +94,20 @@ async def test_hgetall(redis):
 
     val = await redis.hgetall('foo')
     assert val == expected_raw
+
+@pytest.mark.asyncio
+async def test_hdel(redis):
+    redis._redis.hmset('foobar', {'foo': 'bar', 'baz': 'blargh'})
+
+    await redis.hdel('foobar', 'foo')
+
+    assert not redis._redis.hexists('foobar', 'foo')
+    assert redis._redis.hgetall('foobar') == {b'baz': b'blargh'}
+
+@pytest.mark.asyncio
+async def test_hkeys(redis):
+    redis._redis.hmset('foobar', {'foo': 'bar', 'baz': 'blargh'})
+
+    keys = sorted(await redis.hkeys('foobar'))
+
+    assert keys == [b'baz', b'foo']
