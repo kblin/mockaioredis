@@ -81,4 +81,26 @@ class HashCommandsMixin:
 
         return new
 
+    async def hdel(self, key, field, *fields):
+        """Delete one or more hash fields."""
 
+        return self._redis.hdel(key, field, *fields)
+
+    async def hkeys(self, key, *, encoding=_NOTSET):
+        """Get all the fields in a hash."""
+
+        if encoding == _NOTSET:
+            encoding = self._encoding
+
+        ret = self._redis.hkeys(key)
+
+        if encoding is None:
+            return ret
+
+        new = []
+        for val in ret:
+            if hasattr(val, 'decode'):
+                val = val.decode(encoding)
+            new.append(val)
+
+        return new
