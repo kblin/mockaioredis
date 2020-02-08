@@ -95,6 +95,27 @@ async def test_keys(redis):
 
 
 @pytest.mark.asyncio
+async def test_mget(redis):
+    redis._redis.set('foo', 'bar')
+    redis._redis.set('baz', 'blub')
+    redis._redis.set('blargh', 'wjdfk')
+
+    ret = await redis.mget(['foo', 'blargh'], encoding='utf-8')
+    assert ret == ['bar', 'wjdfk']
+
+    ret = await redis.mget(['foo', 'baz'])
+    assert ret == [b'bar', b'blub']
+
+    # This is supposed to work according to the spec.  Go figure
+    ret = await redis.mget('baz', encoding='utf-8')
+    assert ret == ['blub']
+
+    # This is supposed to work according to the spec.  Go figure
+    ret = await redis.mget([], 'baz', 'foo', encoding='utf-8')
+    assert ret == ['blub', 'bar']
+
+
+@pytest.mark.asyncio
 async def test_set(redis):
     await redis.set('foo', 'bar')
     assert redis._redis.get('foo') == b'bar'
