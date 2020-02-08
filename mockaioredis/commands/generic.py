@@ -98,6 +98,17 @@ class GenericCommandsMixin:
 
         return list(map(lambda x: x.decode(encoding), ret))
 
+    async def mget(self, keys, *args, encoding=_NOTSET):
+        """Returns all keys matching pattern."""
+        if encoding == _NOTSET:
+            encoding = self._encoding
+        ret = self._redis.mget(keys, *args)
+
+        if encoding is None:
+            return ret
+
+        return list(map(lambda x: x.decode(encoding), ret))
+
     async def set(self, key, value, *, expire=None, pexpire=None, exist=None):
         """Sets the value of a key"""
         nx = xx = False
