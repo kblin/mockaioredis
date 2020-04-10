@@ -19,6 +19,13 @@ class MockRedis(GenericCommandsMixin, HashCommandsMixin, ListCommandsMixin, SetC
 
         self._encoding = encoding
 
+    async def wait_closed(self):
+        if self._conn:
+            await self._conn.wait_closed()
+
+    def close(self):
+        if self._conn:
+            self._conn.close()
 
 async def create_redis(address, *, db=None, password=None, ssl=None,
                        encoding=None, commands_factory=MockRedis,
