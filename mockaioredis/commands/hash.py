@@ -1,15 +1,11 @@
-import asyncio
-
 from mockaioredis.util import _NOTSET
 
 class HashCommandsMixin:
 
-    @asyncio.coroutine
-    def hset(self, key, field, value):
+    async def hset(self, key, field, value):
         return self._redis.hset(key, field, value)
 
-    @asyncio.coroutine
-    def hget(self, key, field, encoding=_NOTSET):
+    async def hget(self, key, field, encoding=_NOTSET):
         if encoding == _NOTSET:
             encoding = self._encoding
         ret = self._redis.hget(key, field)
@@ -21,12 +17,10 @@ class HashCommandsMixin:
             ret = ret.decode(encoding)
         return ret
 
-    @asyncio.coroutine
-    def hexists(self, key, filed):
+    async def hexists(self, key, filed):
         return self._redis.hexists(key, filed)
 
-    @asyncio.coroutine
-    def hgetall(self, key, encoding=_NOTSET):
+    async def hgetall(self, key, encoding=_NOTSET):
         if encoding == _NOTSET:
             encoding = self._encoding
 
@@ -42,16 +36,14 @@ class HashCommandsMixin:
 
         return new
 
-    @asyncio.coroutine
-    def hmset(self, key, field, value, *pairs):
+    async def hmset(self, key, field, value, *pairs):
         if len(pairs) % 2 != 0:
             raise TypeError("length of pairs must be an even number")
         it = iter( (field, value) + pairs )
         arg_dict = dict(zip(it, it))
         return self._redis.hmset(key, arg_dict)
 
-    @asyncio.coroutine
-    def hmset_dict(self, key, *args, **kwargs):
+    async def hmset_dict(self, key, *args, **kwargs):
         if not args and not kwargs:
             raise TypeError("args or kwargs must be specified")
         if len(args) > 1:
@@ -64,8 +56,7 @@ class HashCommandsMixin:
         args_dict.update(kwargs)
         return self._redis.hmset(key, args_dict)
 
-    @asyncio.coroutine
-    def hmget(self, key, field, *fields, encoding=_NOTSET):
+    async def hmget(self, key, field, *fields, encoding=_NOTSET):
         if encoding == _NOTSET:
             encoding = self._encoding
         ret = self._redis.hmget(key, field, *fields)
