@@ -75,9 +75,14 @@ class MockRedisPool:
         self._used = set()
         self._acquiring = 0
 
-        self._cond = asyncio.Condition(loop=loop)
-        self._close_state = asyncio.Event(loop=loop)
-        self._close_waiter = asyncio.ensure_future(self._do_close(), loop=loop)
+        if sys.version_info < (3, 8):
+            self._cond = asyncio.Condition(loop=loop)
+            self._close_state = asyncio.Event(loop=loop)
+            self._close_waiter = asyncio.ensure_future(self._do_close(), loop=loop)
+        else:
+            self._cond = asyncio.Condition()
+            self._close_state = asyncio.Event()
+            self._close_waiter = asyncio.ensure_future(self._do_close())
 
     @property
     def minsize(self):
@@ -115,7 +120,10 @@ class MockRedisPool:
 
     async def wait_closed(self):
         'wait until pool is closed'
-        await asyncio.shield(self._close_waiter, loop=self._loop)
+        if sys.version_info < (3, 8):
+            await asyncio.shield(self._close_waiter, loop=self._loop)
+        else:
+            await asyncio.shield(self._close_waiter)
 
     async def acquire(self):
         '''Pretend to aquire a connection.
