@@ -1,7 +1,12 @@
+Retired
+=======
+
+This project is now retired. Please see [fakeredis-py](https://github.com/cunla/fakeredis-py) if you need to mock redis
+for testing. `fakeredis-py` supports both async and sync API calls and is actively developed.
+
+
 Mock library to replace aioredis during unit tests
 ==================================================
-
-[![Build Status](https://travis-ci.com/kblin/mockaioredis.svg?branch=master)](https://travis-ci.com/kblin/mockaioredis)
 
 mockaioredis is to [aioredis] what the [mockredispy] library is to plain [redis-py].
 It uses the mockredispy library and wraps it in the asyncio magic required to work like
